@@ -2,6 +2,7 @@ import express from 'express';
 import authRoutes from './api/auth.js';
 import usuarioRoutes from './api/usuarios.js';
 import vehiculoRoutes from './api/vehiculos.js';
+import conductoresRoutes from './api/conductores.js';
 import mantenimientoRoutes from './api/mantenimientos.js';
 import alertaRoutes from './api/alertas.js';
 
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/vehiculos', vehiculoRoutes);
+app.use('/conductores', conductoresRoutes);
 app.use('/mantenimientos', mantenimientoRoutes);
 app.use('/alertas', alertaRoutes);
 
