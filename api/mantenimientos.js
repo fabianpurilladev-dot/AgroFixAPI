@@ -14,26 +14,14 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   const { tipo } = req.query;
 
-  // Selección con join a la tabla de vehículos
   let query = supabase
     .from('mantenimientos')
     .select(`
-      id_mantenimiento,
-      tipo,
-      tipo_mantenimiento,
-      descripcion,
-      fecha_programada,
-      kilometraje_programado,
-      fecha_falla,
-      fecha_reparacion,
-      estado,
-      costo_estimado,
-      costo,
-      observaciones,
+      *,
       vehiculos (
-        placa,
         marca,
-        modelo
+        modelo,
+        placa
       )
     `);
 
@@ -45,14 +33,15 @@ router.get('/', async (req, res) => {
 
   if (error) return res.status(400).json({ error: error.message });
 
-  // Mapear la respuesta para reemplazar id_vehiculo por información legible
-  const result = data.map((item) => ({
+  // Opcional: mapear la respuesta para combinar los datos deseados
+  const result = data.map(item => ({
     ...item,
-    vehiculo: `${item.vehiculos.marca} ${item.vehiculos.modelo} (${item.vehiculos.placa})`,
+    vehiculo: item.vehiculos ? `${item.vehiculos.marca} ${item.vehiculos.modelo} (${item.vehiculos.placa})` : null
   }));
 
   res.json(result);
 });
+
 
 
 // PUT /mantenimientos/:id
