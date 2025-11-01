@@ -5,10 +5,7 @@ const router = express.Router();
 
 // POST /mantenimientos
 router.post('/', async (req, res) => {
-  const { tipo, ...rest } = req.body;
-  const tabla = tipo === 'preventivo' ? 'mantenimientos_preventivos' : 'mantenimientos_reactivos';
-
-  const { error } = await supabase.from(tabla).insert([rest]);
+  const { error } = await supabase.from('mantenimientos').insert([req.body]);
   if (error) return res.status(400).json({ error: error.message });
   res.json({ message: 'Mantenimiento registrado' });
 });
@@ -16,10 +13,13 @@ router.post('/', async (req, res) => {
 // GET /mantenimientos
 router.get('/', async (req, res) => {
   const { tipo } = req.query;
-  let tabla = 'mantenimientos_preventivos';
-  if (tipo === 'reactivo') tabla = 'mantenimientos_reactivos';
 
-  const { data, error } = await supabase.from(tabla).select('*');
+  let query = supabase.from('mantenimientos').select('*');
+  if (tipo) {
+    query = query.eq('tipo', tipo);
+  }
+
+  const { data, error } = await query;
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
 });
@@ -27,10 +27,12 @@ router.get('/', async (req, res) => {
 // PUT /mantenimientos/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { tipo, ...rest } = req.body;
-  const tabla = tipo === 'preventivo' ? 'mantenimientos_preventivos' : 'mantenimientos_reactivos';
 
-  const { error } = await supabase.from(tabla).update(rest).eq(`id_${tipo}`, id);
+  const { error } = await supabase
+    .from('mantenimientos')
+    .update(req.body)
+    .eq('id_mantenimiento', id);
+
   if (error) return res.status(400).json({ error: error.message });
   res.json({ message: 'Mantenimiento actualizado' });
 });
