@@ -3,8 +3,6 @@ import supabase from '../supabaseClient.js';
 
 const router = express.Router();
 
-const TODAY = new Date().toISOString().split('T')[0]; // fecha actual en YYYY-MM-DD
-
 // GET /alertas
 router.get('/', async (_, res) => {
   try {
@@ -35,16 +33,17 @@ router.get('/', async (_, res) => {
 
     const { data: mantenimientos, error: mantenimientosError } = await supabase
       .from('mantenimientos')
-      .select('*')
+      .select('*, vehiculos (marca, modelo, placa)')
       .eq('tipo', 'preventivo')
       .lte('fecha_programada', maintenanceLimitDate.toISOString().split('T')[0]);
 
     if (mantenimientosError) throw mantenimientosError;
 
     mantenimientos?.forEach((m) => {
+      const vehiculo = m.vehiculos;
       alerts.push({
         tipo: 'mantenimiento_pendiente',
-        mensaje: `Mantenimiento pendiente del vehículo ID ${m.id_vehiculo}: ${m.tipo_mantenimiento} programado para el ${m.fecha_programada}`,
+        mensaje: `Mantenimiento pendiente del vehículo ${vehiculo?.marca} ${vehiculo?.modelo} (${vehiculo?.placa}): ${m.tipo_mantenimiento} programado para el ${m.fecha_programada}`,
         fecha_alerta: m.fecha_programada,
       });
     });
