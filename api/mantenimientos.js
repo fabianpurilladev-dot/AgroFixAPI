@@ -13,32 +13,17 @@ router.post('/', async (req, res) => {
 // GET /mantenimientos
 router.get('/', async (req, res) => {
   const { tipo } = req.query;
-
-  let query = supabase
-    .from('mantenimientos')
-    .select(`
-      *,
-      vehiculos (
-        marca,
-        modelo,
-        placa
-      )
-    `);
-
-  if (tipo) {
-    query = query.eq('tipo', tipo);
-  }
-
+  let query = supabase.from('mantenimientos_view').select('*');
+  if (tipo) query = query.eq('tipo', tipo);
   const { data, error } = await query;
-
   if (error) return res.status(400).json({ error: error.message });
-
-  // Opcional: mapear la respuesta para combinar los datos deseados
+  // opcional: mapear para anidar vehiculo o construir una cadena legible
   const result = data.map(item => ({
     ...item,
-    vehiculo: item.vehiculos ? `${item.vehiculos.marca} ${item.vehiculos.modelo} (${item.vehiculos.placa})` : null
+    vehiculo: item.marca && item.modelo && item.placa
+      ? `${item.marca} ${item.modelo} (${item.placa})`
+      : null
   }));
-
   res.json(result);
 });
 
