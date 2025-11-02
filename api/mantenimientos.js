@@ -3,9 +3,12 @@ import supabase from '../supabaseClient.js';
 
 const router = express.Router();
 
-// POST /mantenimientos
 router.post('/', async (req, res) => {
-  const { error } = await supabase.from('mantenimientos').insert([req.body]);
+  const { id_mantenimiento, ...data } = req.body; // ignorar id_mantenimiento si viene
+  const { error } = await supabase
+    .from('mantenimientos')
+    .insert([data]);
+    
   if (error) return res.status(400).json({ error: error.message });
   res.json({ message: 'Mantenimiento registrado' });
 });
