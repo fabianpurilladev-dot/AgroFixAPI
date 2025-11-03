@@ -5,7 +5,8 @@ const router = express.Router();
 
 // POST /conductores
 router.post('/', async (req, res) => {
-  const { error } = await supabase.from('conductores').insert([req.body]);
+  const { id_conductor, ...data } = req.body;
+  const { error } = await supabase.from('conductores').insert([data]);
   if (error) return res.status(400).json({ error: error.message });
   res.json({ message: 'Conductor registrado' });
 });
