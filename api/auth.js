@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
   const valid = bcrypt.compareSync(password, user.password_hash);
   if (!valid) return res.status(401).json({ error: 'Credenciales inválidas' });
 
-  res.json({ message: 'Login exitoso', user: { id: user.id_usuario, rol: user.rol } });
+  res.json({ message: 'Login exitoso', user: { id: user.id_usuario, rol: user.rol, nombre: user.nombre, email: user.email } });
 });
 
 export default router;
